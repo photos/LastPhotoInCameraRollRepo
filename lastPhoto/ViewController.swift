@@ -7,19 +7,34 @@
 //
 
 import UIKit
+import Photos
 
 class ViewController: UIViewController {
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+    //-------------------
+    // MARK: - UI Outlets
+    //-------------------
+    @IBOutlet weak var myImageView: UIImageView!
+    
+    //-------------------------------------
+    // MARK: - Use Last Photo Button Tapped
+    //-------------------------------------
+    @IBAction func useLastPhotoButtonTapped(sender: UIBarButtonItem) {
+        
+        let fetchOptions: PHFetchOptions = PHFetchOptions()
+        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+        
+        let fetchResult = PHAsset.fetchAssetsWithMediaType(PHAssetMediaType.Image, options: fetchOptions)
+        
+        // check result is not nil
+        if (fetchResult.lastObject != nil) {
+            
+            let lastAsset: PHAsset = fetchResult.lastObject as! PHAsset
+            
+            PHImageManager.defaultManager().requestImageForAsset(lastAsset, targetSize: self.myImageView.bounds.size, contentMode: PHImageContentMode.AspectFill, options: PHImageRequestOptions(), resultHandler: { (result, info)in
+                self.myImageView.image = result
+            })
+        }
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-
 }
 
